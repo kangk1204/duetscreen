@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "chunk_size": 5000,
+    "num_workers": 1,
+    "devices": [
+      0
+    ],
+    "simulator": true,
+    "dti_top_k": 100,
+    "docking_top_k": 100,
+    "mmgbsa_top_k": 100,
+    "consensus_constant": 60,
+    "stage_weights": {
+      "dti": 0.4,
+      "docking": 0.35,
+      "mmgbsa": 0.25
+    }
+  },
+  "inputs": {
+    "sequences": "../data/sample_inputs.csv"
+  },
+  "library": {
+    "proteins": [
+      {
+        "id": "CRBN",
+        "sequence": "MMDKEVQKSSSRTPSYQPGVSQSVE"
+      },
+      {
+        "id": "IKZF1",
+        "sequence": "MPLGKKAKLPEKKAPVTPQLPQLQ"
+      }
+    ],
+    "ligands_file": "../zinc_db/purchasable_ligands_100M_random.csv"
+  },
+  "paths": {
+    "workdir": "../workspace_zinc100M",
+    "manifest": "../workspace_zinc100M/MANIFEST.json",
+    "reports": "../workspace_zinc100M/reports"
+  }
+}

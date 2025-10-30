@@ -142,6 +142,24 @@ python scripts/run_pipeline.py \
   --export-xlsx workspace_zinc1M/reports/pipeline_export.xlsx
 ```
 
+### Understanding the exported reports
+
+Each worksheet in the Excel file (and the corresponding JSON arrays) lists the top-ranked partners for a given input. Columns have the following meaning:
+
+| Column | Meaning |
+| ------ | ------- |
+| `rank` | 1-based consensus position (1 = best). |
+| `partner_id` | Identifier of the candidate ligand or protein. |
+| `partner_type` | `ligand` or `protein`. |
+| `value` | SMILES string (for ligands) or sequence (for proteins) pulled from the supplied library file. |
+| `consensus_score` | Weighted reciprocal rank fusion (WRRF) score used for global ranking. Higher is better. |
+| `dti_score`, `docking_score`, `mmgbsa_score` | Deterministic stage scores that fed into the consensus; may be `null` if a stage did not emit the partner. |
+| `stages_present` | Comma-separated list of stages that produced non-null scores. |
+| `stage_count` | Number of contributing stages. |
+| `stage_mean`, `stage_min`, `stage_max`, `stage_std` | Descriptive statistics computed over the available stage scores. |
+
+These fields help diagnose which parts of the pipeline support a candidate and whether it only appeared in a subset of stages.
+
 Outputs appear under the chosen `workdir` (e.g., `workspace_zinc100k/aggregate/final_rankings.json`, `workspace_zinc100k/reports/report.txt`, etc.).
 
 ---
