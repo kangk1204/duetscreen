@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hypervs1000"
+version = "0.2.0"
+description = "Simulated DTI-to-docking pipeline with consensus scoring."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Keunsoo Project Team" }
+]
+dependencies = [
+  "pyyaml>=6.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "requests>=2.31"
+]
+report = [
+  "openpyxl>=3.1"
+]
+zinc = [
+  "requests>=2.31"
+]
+
+[project.scripts]
+hypervs1000 = "hypervs1000.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hypervs1000*"]

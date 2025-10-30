@@ -1,0 +1,233 @@
+
+```
+You are a senior ML + chemoinformatics + HPC software engineer.
+Generate a production-grade **Python 3.11** project named **hypervs1000** for Ubuntu 22.04 LTS that implements this EXACT pipeline:
+
+GOAL
+- Screen a very large small-molecule library.
+- Stage 1: **DTI (3 famous SOTA implementations: DeepDTA, GraphDTA, MolTrans)** → integrate → select EXACTLY **1000 ligands**.
+- Stage 2: **Docking with 2 well-known engines: GNINA + Uni-Dock** on those 1000.
+- Stage 3: **MM/GBSA** on the docked set.
+- Stage 4: **Final weighted rank fusion** where **MM/GBSA rank has weight 0.5** and each docking rank (GNINA, Uni-Dock) has **weight 0.25**. Highest fused score wins.
+
+HARD REQUIREMENTS
+- Python 3.11; Ubuntu 22.04; run on single or multi-GPU workstations.
+- Stream huge SMILES libraries in chunks (no full in-memory loads); resume-safe; checkpointing and caching.
+- Multi-GPU scheduler with device-aware worker pools; obey CUDA_VISIBLE_DEVICES; per-stage concurrency + backpressure.
+- Config-driven (`config.yaml` + env overrides), deterministic seeds, robust logging.
+- CLI-first with subcommands: `prep`, `dti`, `dock`, `mmgbsa`, `select`, `aggregate`, `report`, `validate`, `resume`.
+- Outputs in columnar **Parquet** (CSV optional); artifacts folder per stage; reproducibility manifest.
+- Unit & integration tests; toy dataset; simulator modes for DTI and MM/GBSA so tests run without real checkpoints.
+
+EXTERNAL TOOLS (wrap via subprocess; detect -> warn -> continue)
+- Docking: `gnina`, `unidock` (paths configurable). If not found, skip that engine with WARN and continue.
+- MM/GBSA: `MMPBSA.py` (AmberTools) and/or `gmx_MMPBSA` if present; if missing, run a **deterministic simulator** so pipeline remains testable.
+- Optional: `fpocket` for pocket prep if available.
+
+PYTHON DEPENDENCIES
+- `pandas`, `pyarrow`, `numpy`, `scipy`, `tqdm`, `pyyaml`, `jinja2`, `loguru`, `pydantic`, `typer`, `rich`, `psutil`.
+- `torch` (CUDA) for DTI; optional `cupy` (feature-gated).
+- `rdkit-pypi` for cheminformatics.
+- optional: `polars` (feature-gated). Pin versions in `requirements.txt`; include `environment.yml`.
+
+PROJECT LAYOUT — emit ALL files; output ONLY code using the multi-file format below (no prose):
+### FILE: README.md
+...content...
+### FILE: pyproject.toml
+...content...
+### FILE: requirements.txt
+...content...
+### FILE: environment.yml
+...content...
+### FILE: hypervs1000/__init__.py
+...content...
+### FILE: hypervs1000/config.py
+...content...
+### FILE: hypervs1000/logging_utils.py
+...content...
+### FILE: hypervs1000/io_utils.py
+...content...
+### FILE: hypervs1000/smiles_utils.py
+...content...
+### FILE: hypervs1000/consensus.py
+...content...
+### FILE: hypervs1000/scheduler.py
+...content...
+### FILE: hypervs1000/cli.py
+...content...
+### FILE: hypervs1000/pipeline_common.py
+...content...
+### FILE: hypervs1000/stage_prep.py
+...content...
+### FILE: hypervs1000/stage_dti.py
+...content...
+### FILE: hypervs1000/dti_plugins/base.py
+...content...
+### FILE: hypervs1000/dti_plugins/deepdta.py
+...content...
+### FILE: hypervs1000/dti_plugins/graphdta.py
+...content...
+### FILE: hypervs1000/dti_plugins/moltrans.py
+...content...
+### FILE: hypervs1000/stage_dock.py
+...content...
+### FILE: hypervs1000/dock_engines/base.py
+...content...
+### FILE: hypervs1000/dock_engines/gnina.py
+...content...
+### FILE: hypervs1000/dock_engines/unidock.py
+...content...
+### FILE: hypervs1000/stage_mmgbsa.py
+...content...
+### FILE: hypervs1000/mmgbsa_engines/base.py
+...content...
+### FILE: hypervs1000/mmgbsa_engines/mmpbsa_amber.py
+...content...
+### FILE: hypervs1000/mmgbsa_engines/gmx_mmpbsa.py
+...content...
+### FILE: hypervs1000/stage_select.py
+...content...
+### FILE: hypervs1000/stage_aggregate.py
+...content...
+### FILE: hypervs1000/report.py
+...content...
+### FILE: hypervs1000/assets/report_template.md.j2
+...content...
+### FILE: configs/config.example.yaml
+...content...
+### FILE: data/toy/targets/example_protein.pdb
+...content (small placeholder)...
+### FILE: data/toy/library.smi.gz
+...content (a few SMILES with ids)...
+### FILE: tests/test_consensus.py
+...content...
+### FILE: tests/test_scheduler.py
+...content...
+### FILE: tests/test_end_to_end.py
+...content...
+### FILE: Makefile
+...content...
+### FILE: Dockerfile
+...content...
+
+FUNCTIONAL SPECIFICATION
+
+General
+- `hypervs1000/cli.py`: Typer-based CLI; expose subcommands.
+- Common options: `--config`, `--workdir`, `--devices 0,1`, `--num-workers`, `--chunksize`, `--seed`, `--max-inflight`.
+- Input library: `.smi` or `.smi.gz` with `ligand_id,smiles`.
+- Write Parquet with schemas:
+  - DTI: `ligand_id, smiles, score_deepdta, score_graphdta, score_moltrans, rank_deepdta, rank_graphdta, rank_moltrans, rrf_dti, pass_dti`.
+  - Docking: `dock_gnina_score, dock_unidock_score, rank_gnina, rank_unidock, pose_gnina, pose_unidock, pass_dock`.
+  - MM/GBSA: `mmgbsa_dg` (kcal/mol), `rank_mmgbsa`, `engine`, `pass_mmgbsa`.
+  - Aggregate: `rank_final`, `final_score`, `selected` (bool), plus all intermediate ranks for auditing.
+
+Stage: prep (`stage_prep.py`)
+- Receptor: normalize PDB, add hydrogens; optional protonation via `propka` if present; generate PDBQT as needed.
+- Ligands: sanitize, desalt, deduplicate canonical SMILES, optional tautomer enumeration; generate 3D with RDKit ETKDG for docking.
+- Filters: simple PAINS-like SMARTS + basic physicochemical cutoffs (configurable).
+- Outputs under `prep/`.
+
+Stage: DTI (`stage_dti.py`, `dti_plugins/*`)
+- EXACT models: **DeepDTA**, **GraphDTA**, **MolTrans** (plugins).
+- Each plugin supports two modes:
+  1) **real**: load Torch/TorchScript weights if `weights_path` exists;
+  2) **simulator**: deterministic fast surrogate for tests (e.g., hashed fingerprints + protein-seq hash).
+- Interface `predict_batch(smiles_list, protein_repr) -> np.ndarray`.
+- Mixed precision (`torch.cuda.amp.autocast`), `no_grad`, per-GPU batching.
+- Compute per-model ranks (`1=best`, lower is better), **DTI RRF**:
+  `RRF(i) = sum_m 1/(k + rank_m(i))`, default `k=60`.
+- **Select EXACTLY 1000 ligands** for downstream by DTI integration:
+  - First, mark `pass_dti` if **k-of-3** majority OR in top `top_percent_dti` by RRF.
+  - Final DTI selection: take **top 1000 by RRF** (if fewer than 1000 pass, fill by next-best RRF).
+- Save `dti.parquet`.
+
+Stage: docking (`stage_dock.py`, `dock_engines/*`)
+- Wrap **GNINA** and **Uni-Dock** via subprocess; configurable grids and parameters.
+- For each ligand, run available engines concurrently; parse best scores:
+  - GNINA: use **CNNaffinity** (kcal/mol, more negative is better). Also capture pose file path.
+  - Uni-Dock: capture best vina-like score (kcal/mol, more negative is better).
+- Rank within the 1000 set: `rank_gnina`, `rank_unidock` (`1=best`, i.e., most negative).
+- `pass_dock` default true for all successfully docked; (optional thresholds in config).
+- Save `dock.parquet`.
+
+Stage: MM/GBSA (`stage_mmgbsa.py`, `mmgbsa_engines/*`)
+- Engines: `MMPBSA.py` (AmberTools) and `gmx_MMPBSA` (if available). If none found, run **simulator** producing reproducible ΔG values so tests pass.
+- Optionally generate short implicit-solvent MD snapshots (OpenMM feature-gated); else single-minimized snapshot.
+- Compute `mmgbsa_dg` (kcal/mol; more negative is better) and **rank_mmgbsa** within the evaluated set.
+- Save `mmgbsa.parquet`.
+
+Stage: aggregation (`stage_aggregate.py`)
+- Merge docking + MM/GBSA results for the 1000 ligands.
+- Convert ranks to **rank-scores** in [0,1]: `rank_score = 1 - (rank - 1)/(N - 1)` (higher is better).
+- Compute **final weighted score**:
+```
+
+final_score = 0.50 * rank_score_mmgbsa
++ 0.25 * rank_score_gnina
++ 0.25 * rank_score_unidock
+
+```
+- Break ties by (1) `rank_mmgbsa`, (2) `rank_gnina`, (3) `rank_unidock`.
+- Also implement **Weighted RRF** as an alternative (configurable):
+`WRRF(i) = 0.50/(k + rank_mmgbsa(i)) + 0.25/(k + rank_gnina(i)) + 0.25/(k + rank_unidock(i))`, default `k=60`.
+- Output `rank_final` (1=best), `selected` flag if `--top-k` is provided.
+
+Reports (`report.py`)
+- Jinja2 -> Markdown/HTML summary: funnel counts, rank histograms (matplotlib), and top hits.
+- Save under `reports/DATE/`.
+
+Consensus utilities (`consensus.py`)
+- k-of-3 majority.
+- Rank <-> rank-score conversions; Weighted Rank fusion and WRRF; RRF with tunable k.
+- Z-score utilities (not used for final fusion by default, but available).
+
+Scheduler (`scheduler.py`)
+- Device-aware worker pool; per-GPU queues; retries with exponential backoff; durable on-disk queue; JSONL metrics.
+
+Configuration (`configs/config.example.yaml`)
+- Paths to receptor, grids, binaries: `gnina_bin`, `unidock_bin`, `amber_mmpbsa`, `gmx_mmpbsa`.
+- DTI plugin configs (weights_path optional -> simulator if absent).
+- DTI selection: `dti.top_n: 1000`, `dti.rrf_k: 60`, `dti.majority_vote: true`.
+- Docking parameters for each engine.
+- MM/GBSA parameters (engine preference, MD snapshots on/off).
+- Aggregation:
+```
+
+aggregate:
+method: "weighted_rank"   # or "wrrf"
+weights:
+mmgbsa: 0.50
+gnina: 0.25
+unidock: 0.25
+top_k: 100                # final picks to highlight in report (optional)
+
+```
+- Performance knobs: `chunksize`, `num_workers`, `devices: "0,1"`, timeouts, retries.
+- Env overrides: any key may be overridden by `HVS_*` env vars.
+
+Testing
+- `pytest` tests:
+- `test_consensus.py` validates weighted-rank and WRRF math.
+- `test_scheduler.py` checks GPU assignment and retries.
+- `test_end_to_end.py` runs toy pipeline in simulator mode: DTI -> select 1000 (or all if small) -> docking (sim stubs if binaries missing) -> MM/GBSA (sim) -> aggregate.
+
+CLI EXAMPLES (put in README)
+- `hypervs1000 validate --config configs/config.example.yaml`
+- `hypervs1000 prep --config configs/config.example.yaml`
+- `hypervs1000 dti --config configs/config.example.yaml --devices 0,1`
+- `hypervs1000 dock --config configs/config.example.yaml --devices 0,1`
+- `hypervs1000 mmgbsa --config configs/config.example.yaml --devices 0`
+- `hypervs1000 aggregate --config configs/config.example.yaml`
+- `hypervs1000 report --config configs/config.example.yaml`
+
+CODING STANDARDS
+- Full type hints, numpy-style docstrings, PEP8/ruff compliant.
+- Stream processing, no giant RAM spikes; fail fast on config errors; graceful degradation if external tools missing.
+- Write a `MANIFEST.json` with package versions, CUDA, git hash, and exact CLI invocations to ensure reproducibility.
+
+IMPORTANT: Output ONLY the code files and their contents using the `### FILE:` separators above. Do not include any explanations.
+```
+
+---
+

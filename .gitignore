@@ -1,0 +1,37 @@
+# Python cache / build artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# IDE / editor noise
+.idea/
+.vs/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Runtime workspaces and logs
+workspace/
+workspace*/
+logs/
+*.log
+
+# Large ligand/download directories
+zinc_db/
+zinc_cache/
+data/**/*.smi
+data/**/*.gz
+
+# Misc
+*.bak
+*.tmp
+
