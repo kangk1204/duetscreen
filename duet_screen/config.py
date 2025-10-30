@@ -1,4 +1,4 @@
-"""Configuration loading and validation for HyperVS1000."""
+"""Configuration loading and validation for DUET-Screen."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ try:
 except Exception:  # pragma: no cover - optional dependency
     yaml = None
 
-from hypervs1000.utils import load_csv
+from duet_screen.utils import load_csv
 
 ConfigPrimitive = Union[str, int, float, bool, None]
 ConfigValue = Union[ConfigPrimitive, Sequence["ConfigValue"], Mapping[str, "ConfigValue"]]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Helper script to generate HyperVS1000 configuration files."""
+"""Helper script to generate DUET-Screen configuration files."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ except Exception:  # pragma: no cover - optional dependency
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create a HyperVS1000 configuration file.")
+    parser = argparse.ArgumentParser(description="Create a DUET-Screen configuration file.")
     parser.add_argument("--output", required=True, help="Path to config file to write (json or yaml).")
     parser.add_argument("--chunk-size", type=int, default=2000, help="Pipeline chunk size (default: 2000).")
     parser.add_argument("--dti-top-k", type=int, default=50, help="DTI top-k per input (default: 50).")
@@ -93,7 +93,7 @@ def main() -> int:
     manifest = Path(args.manifest) if args.manifest else workdir / "MANIFEST.json"
     reports = Path(args.reports) if args.reports else workdir / "reports"
 
-    # Assemble the configuration structure expected by HyperVS1000.
+    # Assemble the configuration structure expected by DUET-Screen.
     # Users can tweak most key parameters from the CLI without editing JSON by hand.
     config: Dict[str, object] = {
         "pipeline": {

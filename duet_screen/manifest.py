@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from hypervs1000 import __version__
-from hypervs1000.utils import ensure_directory, git_commit_hash, now_utc_iso
+from duet_screen import __version__
+from duet_screen.utils import ensure_directory, git_commit_hash, now_utc_iso
 
 
 @dataclass
@@ -50,7 +50,7 @@ def _create_manifest_stub() -> Dict[str, Any]:
         "platform": platform.platform(),
         "cuda": _cuda_metadata(),
         "nvcc": _nvcc_version(),
-        "package_versions": {"hypervs1000": __version__},
+        "package_versions": {"duet_screen": __version__},
         "git": {"commit": git_commit_hash()},
         "invocations": [],
     }

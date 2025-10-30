@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-from hypervs1000.config import Config
-from hypervs1000.utils import ensure_directory
+from duet_screen.config import Config
+from duet_screen.utils import ensure_directory
 
 
 def run_report(config: Config) -> Path:
@@ -25,7 +25,7 @@ def run_report(config: Config) -> Path:
 
     report_txt = Path(config.paths.reports) / "report.txt"
     lines: List[str] = []
-    lines.append("HyperVS1000 Report")
+    lines.append("DUET-Screen Report")
     lines.append("==================")
     lines.append(f"Generated at: {data.get('generated_at', 'unknown')}")
     lines.append("")

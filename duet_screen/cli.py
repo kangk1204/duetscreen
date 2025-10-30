@@ -1,13 +1,13 @@
-"""Command line interface for HyperVS1000."""
+"""Command line interface for DUET-Screen."""
 
 from __future__ import annotations
 
 import argparse
 from typing import Optional, Sequence
 
-from hypervs1000.config import Config, PipelineSettings, load_config
-from hypervs1000.manifest import log_invocation
-from hypervs1000.pipeline import (
+from duet_screen.config import Config, PipelineSettings, load_config
+from duet_screen.manifest import log_invocation
+from duet_screen.pipeline import (
     run_aggregate,
     run_docking,
     run_dti,
@@ -54,7 +54,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="hypervs1000")
+    parser = argparse.ArgumentParser(prog="duet_screen")
 
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument("--config", required=True, help="Path to pipeline configuration.")

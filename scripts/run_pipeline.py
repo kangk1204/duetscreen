@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end pipeline runner for HyperVS1000."""
+"""End-to-end pipeline runner for DUET-Screen."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ STAGES = ["validate", "prep", "dti", "dock", "mmgbsa", "aggregate", "report"]
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the full HyperVS1000 pipeline sequentially.")
+    parser = argparse.ArgumentParser(description="Run the full DUET-Screen pipeline sequentially.")
     parser.add_argument("--config", required=True, help="Path to pipeline configuration file.")
     parser.add_argument(
         "--devices",
@@ -165,7 +165,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     base_env.update(env_overrides)
 
     for command in STAGES:
-        stage_args = ["hypervs1000", command, "--config", str(config_path)]
+        stage_args = ["duet_screen", command, "--config", str(config_path)]
         if command == "dti" and args.devices:
             stage_args.extend(["--devices", args.devices])
         # Propagate env overrides (workdir/manifest/reports) to each stage.

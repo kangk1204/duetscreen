@@ -5,8 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable, List
 
-from hypervs1000.config import Config
-from hypervs1000.utils import ensure_directory
+from duet_screen.config import Config
+from duet_screen.utils import ensure_directory
 
 
 WORK_SUBDIRS: List[str] = ["dti", "docking", "mmgbsa", "aggregate", "logs"]

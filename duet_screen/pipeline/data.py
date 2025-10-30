@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable, List, Sequence
 
-from hypervs1000.config import Config, LibraryLigand, LibraryProtein
-from hypervs1000.pipeline.models import InputRecord, PartnerRecord
-from hypervs1000.utils import load_csv
+from duet_screen.config import Config, LibraryLigand, LibraryProtein
+from duet_screen.pipeline.models import InputRecord, PartnerRecord
+from duet_screen.utils import load_csv
 
 
 def load_input_records(config: Config) -> List[InputRecord]:

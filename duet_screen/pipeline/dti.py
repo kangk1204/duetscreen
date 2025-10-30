@@ -5,11 +5,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-from hypervs1000.config import Config
-from hypervs1000.pipeline.data import load_input_records, opposite_partners
-from hypervs1000.pipeline.models import InputRecord, PartnerRecord
-from hypervs1000.scheduler import GPUScheduler, Task
-from hypervs1000.utils import chunked, deterministic_score, write_jsonl
+from duet_screen.config import Config
+from duet_screen.pipeline.data import load_input_records, opposite_partners
+from duet_screen.pipeline.models import InputRecord, PartnerRecord
+from duet_screen.scheduler import GPUScheduler, Task
+from duet_screen.utils import chunked, deterministic_score, write_jsonl
 
 
 def run_dti(config: Config, devices: Optional[Sequence[int]] = None) -> Path:

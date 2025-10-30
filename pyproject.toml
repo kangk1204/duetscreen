@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hypervs1000"
+name = "duet_screen"
 version = "0.2.0"
 description = "Simulated DTI-to-docking pipeline with consensus scoring."
 readme = "README.md"
@@ -28,8 +28,8 @@ zinc = [
 ]
 
 [project.scripts]
-hypervs1000 = "hypervs1000.cli:main"
+duet_screen = "duet_screen.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["hypervs1000*"]
+include = ["duet_screen*"]

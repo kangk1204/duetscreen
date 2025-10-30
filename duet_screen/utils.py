@@ -1,4 +1,4 @@
-"""Utility helpers for HyperVS1000."""
+"""Utility helpers for DUET-Screen."""
 
 from __future__ import annotations
 

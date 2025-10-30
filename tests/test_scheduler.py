@@ -1,6 +1,6 @@
 import pytest
 
-from hypervs1000.scheduler import GPUScheduler, RetryableError, Task
+from duet_screen.scheduler import GPUScheduler, RetryableError, Task
 
 
 def test_scheduler_round_robin_assignment():

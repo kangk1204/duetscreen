@@ -1,9 +1,9 @@
-"""HyperVS1000: deterministic simulated DTI-to-docking pipeline."""
+"""DUET-Screen: deterministic simulated DTI-to-docking pipeline."""
 
 from importlib import metadata
 
 try:
-    __version__ = metadata.version("hypervs1000")
+    __version__ = metadata.version("duet_screen")
 except metadata.PackageNotFoundError:  # pragma: no cover - during local dev
     __version__ = "0.0.0"
 

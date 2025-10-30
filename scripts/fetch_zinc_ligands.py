@@ -61,7 +61,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--pipeline-ready",
         action="store_true",
-        help="Emit columns compatible with HyperVS1000 library ingestion (id,type,value).",
+        help="Emit columns compatible with DUET-Screen library ingestion (id,type,value).",
     )
     parser.add_argument(
         "--page-start",
@@ -91,7 +91,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     session = requests.Session()
     headers = {
-        "User-Agent": "Mozilla/5.0 (compatible; HyperVS1000/0.1; +https://github.com/keunsoo/04_dtidock)"
+        "User-Agent": "Mozilla/5.0 (compatible; DUET-Screen/0.1; +https://github.com/keunsoo/04_dtidock)"
     }
 
     while len(collected) < args.count:

@@ -1,6 +1,6 @@
-# HyperVS1000
+# DUET-Screen
 
-HyperVS1000 is a reproducible, scriptable pipeline that simulates a typical drug–target-interaction (DTI) workflow: scoring molecular pairs, performing docking/MM/GBSA stubs, fusing the results, and exporting ranked hits.  The repository includes helper tooling to prepare ligand libraries from public ZINC dumps, generate configuration files, execute every stage, and summarise results in both JSON and Excel formats.
+**Docking–DTI Unified Evaluation Toolkit for Screening** (DUET-Screen) is a reproducible, scriptable pipeline that simulates a typical drug–target-interaction workflow: scoring molecular pairs, performing docking/MM/GBSA stubs, fusing the results, and exporting ranked hits. The repository bundles helper tooling to prepare ligand libraries from public ZINC dumps, generate configuration files, execute every stage, and summarise results in both JSON and Excel formats.
 
 ---
 
@@ -23,8 +23,8 @@ sudo apt install -y git python3 python3-venv python3-pip aria2 rsync
 
 ```bash
 # 1) Clone the repository
-git clone https://github.com/<your-org>/hypervs1000.git
-cd hypervs1000
+git clone https://github.com/<your-org>/duet_screen.git
+cd duet_screen
 
 # 2) Create and activate a virtual environment (recommended)
 python3 -m venv .venv
@@ -171,7 +171,7 @@ Outputs appear under the chosen `workdir` (e.g., `workspace_zinc100k/aggregate/f
 
 ## 8. Repository Layout (key directories)
 
-- `hypervs1000/` – core package containing config parsing, scheduler, and stage implementations.
+- `duet_screen/` – core package containing config parsing, scheduler, and stage implementations.
 - `scripts/` – helper tooling (sampling, download, pipeline orchestration, reporting, config creation).
 - `configs/` – ready-made examples, plus user-generated configs.
 - `data/` – toy datasets for quick verification.
@@ -181,4 +181,4 @@ Outputs appear under the chosen `workdir` (e.g., `workspace_zinc100k/aggregate/f
 
 ---
 
-With these steps, even a new Ubuntu machine can set up HyperVS1000, harvest ligands from ZINC, execute the full simulated pipeline, and inspect ranked CRBN binders within minutes. Happy screening!
+With these steps, even a new Ubuntu machine can set up DUET-Screen, harvest ligands from ZINC, execute the full simulated pipeline, and inspect ranked CRBN binders within minutes. Happy screening!

@@ -1,4 +1,4 @@
-from hypervs1000.consensus import weighted_average_rank, weighted_reciprocal_rank_fusion
+from duet_screen.consensus import weighted_average_rank, weighted_reciprocal_rank_fusion
 
 
 def test_weighted_average_rank_basic():

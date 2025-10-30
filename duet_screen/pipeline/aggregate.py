@@ -7,9 +7,9 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, MutableMapping, Optional, Tuple
 
-from hypervs1000.config import Config
-from hypervs1000.consensus import weighted_reciprocal_rank_fusion
-from hypervs1000.utils import now_utc_iso, read_jsonl
+from duet_screen.config import Config
+from duet_screen.consensus import weighted_reciprocal_rank_fusion
+from duet_screen.utils import now_utc_iso, read_jsonl
 
 
 def run_aggregate(config: Config) -> Path:

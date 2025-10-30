@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export aggregated HyperVS1000 rankings to JSON and Excel."""
+"""Export aggregated DUET-Screen rankings to JSON and Excel."""
 
 from __future__ import annotations
 

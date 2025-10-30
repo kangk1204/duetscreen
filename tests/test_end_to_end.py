@@ -2,8 +2,8 @@ import csv
 import json
 from pathlib import Path
 
-from hypervs1000.config import load_config
-from hypervs1000.pipeline import (
+from duet_screen.config import load_config
+from duet_screen.pipeline import (
     run_aggregate,
     run_docking,
     run_dti,
@@ -86,4 +86,4 @@ def test_end_to_end_pipeline(tmp_path):
         assert "consensus_score" in entry["partners"][0]
 
     final_txt = (workdir / "reports" / "report.txt").read_text(encoding="utf-8")
-    assert "HyperVS1000 Report" in final_txt
+    assert "DUET-Screen Report" in final_txt
