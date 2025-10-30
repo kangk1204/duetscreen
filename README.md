@@ -1,6 +1,6 @@
 # DUET-Screen
 
-**Docking–DTI Unified Evaluation Toolkit for Screening** (DUET-Screen) is a reproducible, scriptable pipeline that simulates a typical drug–target-interaction workflow: scoring molecular pairs, performing docking/MM/GBSA stubs, fusing the results, and exporting ranked hits. The repository bundles helper tooling to prepare ligand libraries from public ZINC dumps, generate configuration files, execute every stage, and summarise results in both JSON and Excel formats.
+**DTI-docking Unified Evaluation Toolkit for Screening** (DUET-Screen) is a reproducible, scriptable pipeline that simulates a typical drug–target-interaction workflow: scoring molecular pairs, performing docking/MM/GBSA stubs, fusing the results, and exporting ranked hits. The repository bundles helper tooling to prepare ligand libraries from public ZINC dumps, generate configuration files, execute every stage, and summarise results in both JSON and Excel formats.
 
 ---
 
