@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -164,8 +165,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     base_env = os.environ.copy()
     base_env.update(env_overrides)
 
+    duet_cli = shutil.which("duet_screen")
+    if duet_cli:
+        duet_cmd_prefix = [duet_cli]
+    else:
+        duet_cmd_prefix = [sys.executable, "-m", "duet_screen.cli"]
+
     for command in STAGES:
-        stage_args = ["duet_screen", command, "--config", str(config_path)]
+        stage_args = [*duet_cmd_prefix, command, "--config", str(config_path)]
         if command == "dti" and args.devices:
             stage_args.extend(["--devices", args.devices])
         # Propagate env overrides (workdir/manifest/reports) to each stage.
