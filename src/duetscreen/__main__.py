@@ -10,8 +10,7 @@ from duetscreen.data.positive_controls import write_positive_controls
 from duetscreen.data.testset import create_crbn_testset
 
 KNOWN_TARGETS = {
-    "cp": "P00450",  # ceruloplasmin (human)
-    "ceruloplasmin": "P00450",
+    "crbn": "Q96SW2",
 }
 
 

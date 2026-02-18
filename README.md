@@ -45,25 +45,25 @@ python -m duetscreen aggregate --topk 10000
 ## Custom target DTI screening
 Provide a FASTA and a ZINC SMILES list. Use `--out-prefix` to keep results separate.
 ```bash
-# Example: CP (ceruloplasmin)
+# Example: target_A
 python -m duetscreen screen \
-  --protein data/targets/ceruloplasmin_P00450.fasta \
+  --protein data/targets/target_a.fasta \
   --zinc-path data/zinc22/purchasable_druglike.smi \
-  --out-prefix cp_p00450
+  --out-prefix target_a
 
-python -m duetscreen aggregate --topk 10000 --prefix cp_p00450
+python -m duetscreen aggregate --topk 10000 --prefix target_a
 ```
 
 ## Ligand vs proteome (human)
 Score a single ligand against the human proteome (DTI).
 ```bash
 python -m duetscreen screen-targets \
-  --ligand-name rilpivirine \
+  --ligand-name ligand_a \
   --proteome human \
-  --out-prefix rilpivirine_human \
+  --out-prefix ligand_a_human \
   --chunk-size 512
 
-python -m duetscreen aggregate-targets --prefix rilpivirine_human --topk 1000
+python -m duetscreen aggregate-targets --prefix ligand_a_human --topk 1000
 ```
 
 ## Docking setup (GPU)
@@ -86,7 +86,7 @@ Pocket prediction:
 ### Docking (AlphaFold only)
 ```bash
 python -m duetscreen dock \
-  --uniprot Q96SW2 \
+  --uniprot TARGET_UNIPROT \
   --ligands data/results/top_intersection_10000.csv \
   --ligands-format csv \
   --smiles-column smiles \
@@ -97,11 +97,11 @@ python -m duetscreen dock \
 ### Docking (PDB + AlphaFold dual run)
 One command runs **PDB** and **AlphaFold** and writes two docking folders.
 ```bash
-# Example: CP with PDB 4ENZ (protein-name maps to UniProt P00450)
+# Example: target_A with experimental PDB + AlphaFold
 python -m duetscreen dock \
-  --protein-name CP \
-  --pdb-id 4ENZ \
-  --ligands data/results/cp_p00450_top_intersection_10000.csv \
+  --uniprot TARGET_UNIPROT \
+  --pdb-id PDB_ID \
+  --ligands data/results/target_a_top_intersection_10000.csv \
   --ligands-format csv \
   --smiles-column smiles \
   --pockets 2 \
@@ -112,13 +112,13 @@ python -m duetscreen dock \
 ```bash
 # Clean PDB / select chain
 python scripts/prep_receptor_pdb.py \
-  --in data/targets/4ENZ.pdb \
-  --out data/targets/4ENZ_prepped.pdb \
+  --in data/targets/target_a.pdb \
+  --out data/targets/target_a_prepped.pdb \
   --keep-chain A
 
 python -m duetscreen dock \
-  --receptor-pdb data/targets/4ENZ_prepped.pdb \
-  --ligands data/results/cp_p00450_top_intersection_10000.csv \
+  --receptor-pdb data/targets/target_a_prepped.pdb \
+  --ligands data/results/target_a_top_intersection_10000.csv \
   --ligands-format csv \
   --smiles-column smiles \
   --pockets 2 \

@@ -149,28 +149,28 @@ def add_docking_ranks(df: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
-        description="Merge Rilpivirine DTI results with docking scores and export to Excel."
+        description="Merge ligand DTI results with docking scores and export to Excel."
     )
     parser.add_argument(
         "--all",
         type=Path,
-        default=root / "data/results/rilpivirine_human_top_20659.csv",
+        default=root / "data/results/ligand_human_top_all.csv",
         help="Full DTI result CSV (no filtering).",
     )
     parser.add_argument(
         "--union",
         type=Path,
-        default=root / "data/results/rilpivirine_human_top_union_3000.csv",
+        default=root / "data/results/ligand_human_top_union.csv",
     )
     parser.add_argument(
         "--intersection",
         type=Path,
-        default=root / "data/results/rilpivirine_human_top_intersection_1000.csv",
+        default=root / "data/results/ligand_human_top_intersection.csv",
     )
     parser.add_argument(
         "--dock-root",
         type=Path,
-        default=root / "data/docking/rilpivirine_human_all_fpocket",
+        default=root / "data/docking/ligand_human_all",
     )
     parser.add_argument(
         "--gene-map",
@@ -181,7 +181,7 @@ def main() -> None:
     parser.add_argument(
         "--out",
         type=Path,
-        default=root / "data/results/rilpivirine_dti_docking_merged.xlsx",
+        default=root / "data/results/ligand_dti_docking_merged.xlsx",
     )
     parser.add_argument(
         "--only-all",
