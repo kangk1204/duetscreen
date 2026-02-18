@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: duetscreen
+Version: 0.1.0
+Summary: CRBN DTI screening pipeline
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+
+# DuetScreen: CRBN DTI Screening Pipeline
+
+End-to-end pipeline to train MolTrans, DrugBAN, and GraphDTA on a common BindingDB split, then screen ZINC22 purchasable drug-like compounds against CRBN and report the top-10k intersection.
+
+## Notes / Constraints
+- MolTrans, DrugBAN, and GraphDTA do **not** ship official pretrained weights. This pipeline trains them locally.
+- Default training data: MolTrans BindingDB split (binary labels). GraphDTA trains on the same binary labels (treated as regression).
+- ZINC22 download is **subsampled** by tranche + purchasability filters and then filtered by Lipinski-like rules. Adjust counts as needed.
+- CRBN sequence/structure is fetched from the AlphaFold API (latest model version).
+- Downloads, training, and screening are resumable via checkpoint/state files when re-running the same command.
+
+## Quickstart
+```bash
+# 1) Install dependencies + clone model repos
+bash scripts/setup.sh
+
+# 2) Download datasets, CRBN AlphaFold, and ZINC22 subset
+python -m duetscreen setup-data \
+  --bindingdb-split bindingdb \
+  --zinc-target-count 200000
+
+# 3) Train the three models
+python -m duetscreen train --model moltrans
+python -m duetscreen train --model drugban
+python -m duetscreen train --model graphdta
+
+# 4) Screen CRBN and aggregate top-10k intersection
+python -m duetscreen screen --protein data/targets/crbn.fasta
+python -m duetscreen aggregate --topk 10000
+```
+
+## One-shot (install + data + train + screen)
+```bash
+bash scripts/run_all.sh
+```
+
+## Outputs
+- Model checkpoints: `data/models/`
+- Per-model scores: `data/results/`
+- Intersection top-10k: `data/results/top_intersection_10000.csv`
+- Positive control ranks: `data/results/controls_ranking.csv`
+
+## Configuration Knobs
+- ZINC22 subset size: `--zinc-target-count`
+- ZINC22 tranche/purchasability filters: `--zinc-tranches`, `--zinc-reactivity`, `--zinc-purchasability`
+- Training epochs/batch size: `--epochs` (resume enabled by default; use `--no-resume` to disable)
+- Screening chunk size: `--chunk-size`
